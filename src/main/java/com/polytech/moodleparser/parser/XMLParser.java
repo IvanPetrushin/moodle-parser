@@ -113,33 +113,38 @@ public class XMLParser {
 
                     currentAnswer = splitted[j].trim();
                     if (!currentAnswer.equals("")) {
-                        if (Objects.equals(questionType, "multichoice") || Objects.equals(questionType,"shortanswer")
-                                ||  Objects.equals(questionType,"multichoiceset") || Objects.equals(questionType,"numerical")
-                        || Objects.equals(questionType,"ddwtos")) {
-                            if (j == 0) {
-                                answer = new StringBuilder(currentAnswer);
+                        switch (questionType) {
+                            case "multichoice", "multichoiceset" -> {
+                                if (j == 0) {
+                                    answer = new StringBuilder(currentAnswer);
+                                }
+                                if (j == splitted.length - 1 && splitted[splitted.length - 1].trim().equals("true") && !Objects.equals(questionType,"ddwtos")) {
+                                    answer.append(" - Правильный ответ");
+                                }
                             }
-                            if (j == splitted.length - 1 && splitted[splitted.length - 1].trim().equals("true") && !Objects.equals(questionType,"ddwtos")) {
-                                answer.append(" - Правильный ответ");
+                            case "ddwtos", "shortanswer", "numerical" -> {
+                                if (j == 0) {
+                                    answer = new StringBuilder(currentAnswer);
+                                }
                             }
-                        }
-                        if (Objects.equals(questionType, "gapselect")) {
-                            String[] string = newQuestionText.split("");
-                            if (j == 0) {
-                                answer = new StringBuilder(currentAnswer);
-                                for (int k = 0; k <= string.length; k++) {
-                                    int index = -1;
-                                    if (string[k].equals("[") && string[k + 1] != null && string[k + 1].equals("[") && string[k + 3] != null && string[k + 3].equals("]")
-                                            && string[k + 4] != null && string[k + 4].equals("]")) {
-                                        try {
-                                            index = Integer.parseInt(string[k + 2]);
-                                        } catch (NumberFormatException e) {
-                                            throw new RuntimeException(e);
+                            case "gapselect" -> {
+                                String[] string = newQuestionText.split("");
+                                if (j == 0) {
+                                    answer = new StringBuilder(currentAnswer);
+                                    for (int k = 0; k <= string.length; k++) {
+                                        int index = -1;
+                                        if (string[k].equals("[") && string[k + 1] != null && string[k + 1].equals("[") && string[k + 3] != null && string[k + 3].equals("]")
+                                                && string[k + 4] != null && string[k + 4].equals("]")) {
+                                            try {
+                                                index = Integer.parseInt(string[k + 2]);
+                                            } catch (NumberFormatException e) {
+                                                throw new RuntimeException(e);
+                                            }
+                                            if (index > -1 && count == index) {
+                                                answer = new StringBuilder(currentAnswer + " - Правильный ответ");
+                                            }
+                                            break;
                                         }
-                                        if (index > -1 && count == index) {
-                                            answer = new StringBuilder(currentAnswer + " - Правильный ответ");
-                                        }
-                                        break;
                                     }
                                 }
                             }

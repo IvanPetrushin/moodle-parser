@@ -18,7 +18,7 @@ public class Word {
         questionSettings.setFontFamily("Times New Roman");
         questionSettings.setFontSize(14);
         questionSettings.setBold(true);
-        questionSettings.setText("Question №" + number.toString() + ": " + questionText);
+        questionSettings.setText("Вопрос №" + number.toString() + ": " + questionText);
 
         XWPFParagraph type = document.createParagraph();
         XWPFRun typeSettings = type.createRun();
@@ -43,10 +43,10 @@ public class Word {
             answersSettings.setFontFamily("Times New Roman");
             answersSettings.setFontSize(14);
 
-            if (s.contains("Правильный ответ")) {
+            if (s.contains(" - Правильный ответ")) {
                 answersSettings.setTextHighlightColor("yellow");
             }
-            answersSettings.setText(count + ". " + s);
+            answersSettings.setText(count + ". " + s.replaceAll(" - Правильный ответ", ""));
             count++;
         }
     }
@@ -115,7 +115,7 @@ public class Word {
 
         try {
             XWPFDocument document = new XWPFDocument();
-            FileOutputStream out = new FileOutputStream(new File("D:\\projetdocx\\abcde.docx")); //надо поменять
+            FileOutputStream out = new FileOutputStream("src/main/resources/DOCX/Вопросы.docx"); //надо поменять
 
             //основа
             for (int i = 0; i < parsed.size(); i++) {
@@ -127,7 +127,7 @@ public class Word {
                 for (Map.Entry<String, Map<String, ArrayList<String>>> entry : question.entrySet()) {
                     questionType = entry.getKey();
                     Map<String, ArrayList<String>> value = entry.getValue();
-                    System.out.println("Question № " + questionNumber + "\n" + "Type: " + questionType);
+                    System.out.println("Вопрос № " + questionNumber + "\n" + "Type: " + questionType);
                     for (Map.Entry<String, ArrayList<String>> entry1 : value.entrySet()){
                         questionText = entry1.getKey();
                         answers = entry1.getValue();
