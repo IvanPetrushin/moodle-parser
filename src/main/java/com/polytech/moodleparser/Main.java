@@ -1,5 +1,6 @@
 package com.polytech.moodleparser;
 
+import com.polytech.moodleparser.docxConfig.Word;
 import com.polytech.moodleparser.parser.XMLParser;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -14,6 +15,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Main extends Application {
     @Override
@@ -40,10 +44,10 @@ public class Main extends Application {
                         stringBuilder.append(line).append("\n");
                     }
                     // Здесь парсер
-                    XMLParser.collectXMLData(stringBuilder.toString());
+                    List<Map<String, Map<String, ArrayList<String>>>> parsed = XMLParser.collectXMLData(stringBuilder.toString());
 
                     //Здесь должен создавать документ
-
+                    Word.generateWord(parsed);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
