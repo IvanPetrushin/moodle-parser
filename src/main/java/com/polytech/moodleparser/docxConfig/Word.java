@@ -127,8 +127,9 @@ public class Word {
                 String questionText = question.getText();
                 List<String> answers = question.getAnswers();
                 int questionNumber = i; //надо поменять с учетом что первый элемент это категория
-                System.out.println("Вопрос № " + questionNumber + "\n" + "Type: " + questionType);
-                System.out.println("Text: " + questionText + "\nAnswers: " + answers +"\n\n");
+                //Для отладки
+//                System.out.println("Вопрос № " + questionNumber + "\n" + "Type: " + questionType);
+//                System.out.println("Text: " + questionText + "\nAnswers: " + answers +"\n\n");
                 //запись в файл
                 if (types.containsKey(questionType)){
                     switch (questionType) {

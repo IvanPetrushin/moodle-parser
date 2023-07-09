@@ -98,7 +98,8 @@ public class XMLParser {
         } catch (IOException | SAXException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(questionsInfo);
+        // Для отладки
+        // System.out.println(questionsInfo);
         return questionsInfo;
     }
 

@@ -17,28 +17,46 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Objects;
 
 public class Main extends Application {
+    static String fileName = "";
     @Override
     public void start(Stage stage) {
         BorderPane layout = new BorderPane();
+        layout.setStyle("-fx-background-color: rgba(30,29,29,0.95)");
 
-        Button button = new Button("Открыть файл");
-        Button button1 = new Button("Конвертировать");
         Label label = new Label();
+        label.setText("Конвертация из MoodleXML в DOCX");
+        label.setId("label-1");
+        label.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/CSS/LabelStyle.css")).toExternalForm());
+
+        Button button = new Button("Загрузить XML файл");
+        button.setMaxSize(150, 50);
+        button.setId("my-button");
+        button.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/CSS/ButtonStyle.css")).toExternalForm());
+
+        BorderPane.setAlignment(button, Pos.TOP_CENTER);
+        BorderPane.setAlignment(label, Pos.TOP_CENTER);
+        layout.setCenter(button);
+        layout.setTop(label);
+        Scene scene = new Scene(layout, 420, 420);
+        stage.setTitle("Загрузка файла");
+        stage.setScene(scene);
+        stage.show();
 
         button.setOnAction(actionEvent -> {
+            button.getStyleClass().removeAll("addBobOk, focus");
+            button.getStyleClass().add("addBobOk");
             FileChooser fileChooser = new FileChooser();
 
             fileChooser.setInitialDirectory(new File("C:\\"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML", "*.xml"));
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null) {
+                fileName = selectedFile.getName();
 
-                label.setText(selectedFile.getName());
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new FileReader(selectedFile));
                     StringBuilder stringBuilder = new StringBuilder();
@@ -46,13 +64,18 @@ public class Main extends Application {
                     while ((line = bufferedReader.readLine()) != null) {
                         stringBuilder.append(line).append("\n");
                     }
-                    // Здесь парсер
-                    List<Question> parsed = XMLParser.collectXMLData(stringBuilder.toString());
 
-                    //Здесь должен создавать документ
+                    List<Question> parsed = XMLParser.collectXMLData(stringBuilder.toString());
                     Word.generateWord(parsed);
+
                     stage.close();
-                    Platform.runLater( () -> new Main().start( new Stage() ) );
+                    Platform.runLater( () -> {
+                        try {
+                            new SecondStage().start( new Stage() );
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -60,41 +83,11 @@ public class Main extends Application {
                 System.out.println("No file selected");
             }
         });
-        button1.setOnAction(actionEvent -> {
-            File file = new File("src/main/resources/DOCX/Вопросы.docx");
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Save file");
-            fileChooser.setInitialDirectory(new File("C:\\Users\\Public\\Documents"));
-            fileChooser.setInitialFileName("Вопросы");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("DOCX", "*.docx"));
-            File dest = fileChooser.showSaveDialog(stage);
-
-            if (dest != null) {
-                try {
-                    Files.copy(file.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
-                    System.out.println(file.toPath());
-                }
-            }
-
-        });
-
-
-        layout.setTop(button);
-        layout.setCenter(label);
-        layout.setBottom(button1);
-
-        BorderPane.setAlignment(button, Pos.CENTER);
-        BorderPane.setAlignment(label, Pos.CENTER);
-        BorderPane.setAlignment(button1, Pos.CENTER);
-
-        Scene scene = new Scene(layout, 320, 240);
-        stage.setTitle("Конвертация файла");
-        stage.setScene(scene);
-        stage.show();
     }
 
-
+    public static String getFileName() {
+        return fileName;
+    }
 
     public static void main(String[] args) {
         launch();

@@ -1,0 +1,15 @@
+#label-1 {
+    -fx-text-fill: #ffffff;
+    -fx-padding: 80px;
+    -fx-font-size: 14px;
+    -fx-font-style: 'Calibri';
+    -fx-font-weight: bold;
+}
+
+#label-2 {
+    -fx-text-fill: #ffffff;
+    -fx-padding: 45px;
+    -fx-font-family: 'Calibri';
+    -fx-font-style: Italic;
+    -fx-font-size: 14px;
+}
