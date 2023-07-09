@@ -1,5 +1,6 @@
 package com.polytech.moodleparser.parser;
 
+import com.polytech.moodleparser.docxConfig.Question;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,12 +13,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class XMLParser {
-    public static List<Map<String, Map<String, ArrayList<String>>>> collectXMLData(String inputXML) {
+    public static List<Question> collectXMLData(String inputXML) {
 
-        List<Map<String, Map<String, ArrayList<String>>>> questionsInfo = new ArrayList<>(); // <Тип вопроса, <Формулировка, ответы>>
+        List<Question> questionsInfo = new ArrayList<>();
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
@@ -53,7 +56,7 @@ public class XMLParser {
                             }
 
                             if (Objects.equals(detailElement.getTagName(), "answer") || Objects.equals(detailElement.getTagName(), "dragbox")
-                            || Objects.equals(detailElement.getTagName(), "selectoption")) {
+                                    || Objects.equals(detailElement.getTagName(), "selectoption")) {
 
                                 if (detailElement.getTextContent() != null) {
                                     String currentText = detailElement.getTextContent();
@@ -71,9 +74,20 @@ public class XMLParser {
                             }
                         }
                     }
-                    Map<String, Map<String, ArrayList<String>>> questions = new HashMap<>();
-                    questions.put(questionType, normalizeXMLData(questionType, answers, questionText));
-                    questionsInfo.add(questions);
+                    Question qstn = normalizeXMLData(questionType, answers, questionText);
+                    boolean isDuplicate = false;
+                    for(Question q: questionsInfo){
+                        if(q.getText().equals(qstn.getText())){
+                            isDuplicate = true;
+                            break;
+                        }
+                    }
+                    if(!isDuplicate &&
+                            !qstn.getText().equals("") &&
+                            !qstn.getType().equals("") &&
+                            qstn.getAnswers()!=null) {
+                        questionsInfo.add(qstn);
+                    }
                 }
             }
 
@@ -93,15 +107,14 @@ public class XMLParser {
      * @param questionType - тип вопроса
      * @param answers - ответы
      * @param questionText - формулировка
-     * @return Map<String, ArrayList<String>> - Нормализованные (формулировка, список ответов).
+     * @return Question
      */
-    public static Map<String, ArrayList<String>> normalizeXMLData(String questionType, ArrayList<String> answers, String questionText) {
+    public static Question normalizeXMLData(String questionType, ArrayList<String> answers, String questionText) {
         int count = 0;
-        Map<String, ArrayList<String>> normalizedAnswers = new HashMap<>(){};
+        Question normalizedAnswers = new Question();
         String newQuestionText = questionText.replaceAll("<[^>]*>", "").trim(); //тупо все теги убирает, это тупо, но я пока ничего лучше не придумал В(
         ArrayList<String> newAnswers = new ArrayList<>();
         StringBuilder answer = new StringBuilder();
-
 
         if (!Objects.equals(questionType, "essay")) {
             for (int i = 0; i < answers.toArray().length; i++) {
@@ -152,11 +165,10 @@ public class XMLParser {
                     }
                 }
                 newAnswers.add(answer.toString());
-                normalizedAnswers.put(newQuestionText, newAnswers);
+                normalizedAnswers = new Question(newQuestionText,questionType, newAnswers);
             }
-
         } else {
-            normalizedAnswers.put(newQuestionText, answers);
+            normalizedAnswers = new Question(newQuestionText, questionType, answers);
         }
         return normalizedAnswers;
     }

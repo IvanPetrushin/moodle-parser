@@ -1,14 +1,17 @@
 package com.polytech.moodleparser.docxConfig;
 
-import org.apache.poi.xwpf.usermodel.*;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 
-import java.io.File;
 import java.io.FileOutputStream;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Word {
 
-    public static void printTextAndType(XWPFDocument document, Integer number, String questionText, String typeText, Map<String, String> types){
+    public static void printTextAndType(XWPFDocument document, Integer number, String questionText, String questionType){
         XWPFParagraph newLine = document.createParagraph();
         XWPFRun run = newLine.createRun();
         run.setText(" ");
@@ -25,11 +28,11 @@ public class Word {
         typeSettings.setFontFamily("Times New Roman");
         typeSettings.setFontSize(14);
         typeSettings.setItalic(true);
-        typeSettings.setText("Тип вопроса: " + types.get(typeText));
+        typeSettings.setText("Тип вопроса: " + questionType);
     }
 
-    public static void multichoicesAndGap(XWPFDocument document, Integer number, String questionText, List<String> answersList, String textType, Map<String, String> types){
-        printTextAndType(document, number, questionText, textType, types);
+    public static void multichoicesAndGap(XWPFDocument document, Integer number, String questionText, List<String> answersList, String questionType){
+        printTextAndType(document, number, questionText, questionType);
         int count = 1;
 
         for (String s : answersList) {
@@ -51,12 +54,12 @@ public class Word {
         }
     }
 
-    public static void essay(XWPFDocument document, Integer number, String questionText, String textType, Map<String, String> types){
-        printTextAndType(document, number, questionText, textType, types);
+    public static void essay(XWPFDocument document, Integer number, String questionText, String questionType){
+        printTextAndType(document, number, questionText, questionType);
     }
 
-    public static void ddwtos(XWPFDocument document, Integer number, String questionText, List<String> answersList, String textType, Map<String, String> types){ //3
-        printTextAndType(document, number, questionText, textType, types);
+    public static void ddwtos(XWPFDocument document, Integer number, String questionText, List<String> answersList, String questionType){ //3
+        printTextAndType(document, number, questionText, questionType);
 
         XWPFParagraph answersTitle = document.createParagraph();
         XWPFRun answersPrint = answersTitle.createRun();
@@ -79,8 +82,8 @@ public class Word {
         }
     }
 
-    public static void numericalAndShort(XWPFDocument document, Integer number, String questionText, List<String> answersList, String textType,Map<String, String> types){ // 2
-        printTextAndType(document, number, questionText, textType, types);
+    public static void numericalAndShort(XWPFDocument document, Integer number, String questionText, List<String> answersList, String questionType){ // 2
+        printTextAndType(document, number, questionText, questionType);
 
         XWPFParagraph answersTitle = document.createParagraph();
         XWPFRun answersPrint = answersTitle.createRun();
@@ -101,7 +104,7 @@ public class Word {
     }
 
 
-    public static void generateWord(List<Map<String, Map<String, ArrayList<String>>>> parsed) {
+    public static void generateWord(List<Question> parsed) {
         //главный List
 
         Map<String, String> types = new HashMap<>();
@@ -119,29 +122,20 @@ public class Word {
 
             //основа
             for (int i = 0; i < parsed.size(); i++) {
-                Map<String, Map<String, ArrayList<String>>> question = parsed.get(i);
+                Question question = parsed.get(i);
+                String questionType = question.getType();
+                String questionText = question.getText();
+                List<String> answers = question.getAnswers();
                 int questionNumber = i; //надо поменять с учетом что первый элемент это категория
-                String questionType = "";
-                String questionText = "";
-                List<String> answers = new ArrayList<>();
-                for (Map.Entry<String, Map<String, ArrayList<String>>> entry : question.entrySet()) {
-                    questionType = entry.getKey();
-                    Map<String, ArrayList<String>> value = entry.getValue();
-                    System.out.println("Вопрос № " + questionNumber + "\n" + "Type: " + questionType);
-                    for (Map.Entry<String, ArrayList<String>> entry1 : value.entrySet()){
-                        questionText = entry1.getKey();
-                        answers = entry1.getValue();
-                        System.out.println("Text: " + questionText + "\nAnswers: " + answers +"\n\n");
-                    }
-                }
-
+                System.out.println("Вопрос № " + questionNumber + "\n" + "Type: " + questionType);
+                System.out.println("Text: " + questionText + "\nAnswers: " + answers +"\n\n");
                 //запись в файл
                 if (types.containsKey(questionType)){
                     switch (questionType) {
-                        case ("ddwtos") -> ddwtos(document, questionNumber, questionText, answers, questionType, types);
-                        case ("essay") -> essay(document, questionNumber, questionText, questionType, types);
-                        case ("gapselect"), ("multichoice"), ("multichoiceset") -> multichoicesAndGap(document, questionNumber, questionText, answers, questionType, types);
-                        case ("numerical"), ("shortanswer") -> numericalAndShort(document, questionNumber, questionText, answers, questionType, types);
+                        case ("ddwtos") -> ddwtos(document, questionNumber, questionText, answers, types.get(questionType));
+                        case ("essay") -> essay(document, questionNumber, questionText, types.get(questionType));
+                        case ("gapselect"), ("multichoice"), ("multichoiceset") -> multichoicesAndGap(document, questionNumber, questionText, answers, types.get(questionType));
+                        case ("numerical"), ("shortanswer") -> numericalAndShort(document, questionNumber, questionText, answers, types.get(questionType));
                         default -> System.out.println("Такого типа вопроса нет");
                     }
                 }
