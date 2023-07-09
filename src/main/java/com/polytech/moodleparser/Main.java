@@ -1,5 +1,6 @@
 package com.polytech.moodleparser;
 
+import com.polytech.moodleparser.docxConfig.Question;
 import com.polytech.moodleparser.docxConfig.Word;
 import com.polytech.moodleparser.parser.XMLParser;
 import javafx.application.Application;
@@ -12,12 +13,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Main extends Application {
     @Override
@@ -45,7 +47,7 @@ public class Main extends Application {
                         stringBuilder.append(line).append("\n");
                     }
                     // Здесь парсер
-                    List<Map<String, Map<String, ArrayList<String>>>> parsed = XMLParser.collectXMLData(stringBuilder.toString());
+                    List<Question> parsed = XMLParser.collectXMLData(stringBuilder.toString());
 
                     //Здесь должен создавать документ
                     Word.generateWord(parsed);
