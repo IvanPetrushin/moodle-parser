@@ -126,7 +126,7 @@ public class Word {
                 String questionType = question.getType();
                 String questionText = question.getText();
                 List<String> answers = question.getAnswers();
-                int questionNumber = i; //надо поменять с учетом что первый элемент это категория
+                int questionNumber = i + 1; //надо поменять с учетом что первый элемент это категория
                 //Для отладки
 //                System.out.println("Вопрос № " + questionNumber + "\n" + "Type: " + questionType);
 //                System.out.println("Text: " + questionText + "\nAnswers: " + answers +"\n\n");
