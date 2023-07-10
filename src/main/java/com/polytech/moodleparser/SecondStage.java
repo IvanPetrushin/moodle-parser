@@ -6,7 +6,6 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -14,6 +13,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
@@ -57,11 +57,11 @@ public class SecondStage extends Application {
         stage.show();
 
         button.setOnAction(actionEvent -> {
-            File file = new File("src/main/resources/DOCX/Вопросы.docx");
+            File file = new File("C:\\Users\\Public\\Documents\\Вопросы.docx");
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save file");
             fileChooser.setInitialDirectory(new File("C:\\Users\\Public\\Documents"));
-            fileChooser.setInitialFileName("Вопросы");
+            fileChooser.setInitialFileName("Questions");
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("DOCX", "*.docx"));
             File dest = fileChooser.showSaveDialog(stage);
 
@@ -71,6 +71,9 @@ public class SecondStage extends Application {
                     label.setText("Сохранено");
                 } catch (IOException e) {
                     label.setText("Ошибка");
+                    System.out.println(file.getAbsolutePath() + " " + file.getName());
+                    System.out.println(dest.toPath());
+                    System.out.println(e);
                 }
             }
         });

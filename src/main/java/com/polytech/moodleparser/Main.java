@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,7 +59,7 @@ public class Main extends Application {
                 fileName = selectedFile.getName();
 
                 try {
-                    BufferedReader bufferedReader = new BufferedReader(new FileReader(selectedFile));
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(selectedFile, StandardCharsets.UTF_8));
                     StringBuilder stringBuilder = new StringBuilder();
                     String line;
                     while ((line = bufferedReader.readLine()) != null) {

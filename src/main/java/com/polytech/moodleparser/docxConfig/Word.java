@@ -5,6 +5,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,7 +119,7 @@ public class Word {
 
         try {
             XWPFDocument document = new XWPFDocument();
-            FileOutputStream out = new FileOutputStream("src/main/resources/DOCX/Вопросы.docx"); //надо поменять
+            FileOutputStream out = new FileOutputStream("C:\\Users\\Public\\Documents\\Вопросы.docx"); //надо поменять
 
             //основа
             for (int i = 0; i < parsed.size(); i++) {
